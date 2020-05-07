@@ -1,0 +1,30 @@
+Type: AWS::IAM::Role
+Properties:
+  RoleName: LambdaEC2StartStopLoggingRole
+  AssumeRolePolicyDocument:
+    Version: "2012-10-17"
+    Statement:
+      - Effect: Allow
+        Principal:
+          Service: "lambda.amazonaws.com"
+        Action: "sts:AssumeRole"
+  Policies:
+    - PolicyName: CloudWatchLogsPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "logs:CreateLogStream"
+              - "logs:CreateLogGroup"
+              - "logs:PutLogEvents"
+            Effect: Allow
+            Resource: "*"
+    - PolicyName: StartStopEC2Policy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "ec2:Start*"
+              - "ec2:Stop*"
+            Effect: Allow
+            Resource: "*"

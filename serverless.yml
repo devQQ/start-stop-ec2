@@ -1,0 +1,42 @@
+service: ec2-start-stop
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs10.x
+
+resources:
+  Resources:
+    LambdaEC2LoggingRole: ${file(src/functions/roles/lambda-ec2-start-stop-logging.yml)}
+
+functions:
+  startEC2:
+    handler: src/functions/start-ec2.handler
+    runtime: nodejs10.x
+    package:
+      individually: true
+      include:
+        - "src/functions/start-ec2.js"
+        - "src/functions/utils/lambda-utils.js"
+        - "src/functions/utils/response-lib.js"
+    events:
+      - schedule: cron(0 5 * * ? *)
+    role:
+      Fn::GetAtt:
+        - LambdaEC2LoggingRole
+        - Arn
+  stopEC2:
+    handler: src/functions/stop-ec2.handler
+    runtime: nodejs10.x
+    package:
+      individually: true
+      include:
+        - "src/functions/stop-ec2.js"
+        - "src/functions/utils/lambda-utils.js"
+        - "src/functions/utils/response-lib.js"
+    events:
+      - schedule: cron(0 12 * * ? *)
+    role:
+      Fn::GetAtt:
+        - LambdaEC2LoggingRole
+        - Arn
